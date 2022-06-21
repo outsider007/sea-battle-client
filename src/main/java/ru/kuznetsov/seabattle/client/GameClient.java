@@ -22,8 +22,19 @@ public class GameClient {
         try (Socket clientSocket = new Socket(host, port)) {
             inputStream = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             outputStream = new PrintWriter(clientSocket.getOutputStream(), true);
-            System.out.println(inputStream.lines().collect(Collectors.joining()));
-        }
+            String content;
+            while (!clientSocket.isClosed() || !clientSocket.isConnected()) {
+                content = inputStream.readLine();
+                if (content != null) {
+                    if ("Bye".equals(content)) {
+                        clientSocket.close();
+                        break;
+                    }
 
+                    System.out.println(content);
+                }
+            }
+            System.out.println("Client close connection!");
+        }
     }
 }
